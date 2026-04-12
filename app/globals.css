@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: theme(colors.brand.light);
+    color: theme(colors.brand.dark);
+  }
+}
