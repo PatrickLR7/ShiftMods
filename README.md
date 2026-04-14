@@ -2,6 +2,9 @@
 
 ![ShiftMods storefront](docs/screenshot.png)
 
+## Demo
+[https://shift-mods.vercel.app/](https://shift-mods.vercel.app/)
+
 **ShiftMods** is a headless e-commerce storefront for car mods and accessories — built to find performance, offroad, and visual mods for your builds. It combines editorial content management with live Shopify inventory, delivering a fast, fully typed shopping experience.
 
 ---
