@@ -109,3 +109,7 @@ export type ShopifyRemoveFromCartResponse = {
 export type ShopifyAllCollectionsResponse = {
   collections: { nodes: { handle: string }[] }
 }
+
+export type ShopifyAllProductsResponse = {
+  products: { nodes: { handle: string }[] }
+}

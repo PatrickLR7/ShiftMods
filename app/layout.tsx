@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { CartProvider } from '@/context/CartContext'
 import Header from '@/components/Header'
+import CartDrawer from '@/components/cart/CartDrawer'
 import './globals.css'
 
 const inter = Inter({
@@ -34,6 +35,8 @@ export default function RootLayout({
               © {new Date().getFullYear()} ShiftMods. All rights reserved.
             </div>
           </footer>
+          {/* CartDrawer is always mounted at root so it can slide in from any page */}
+          <CartDrawer />
         </CartProvider>
       </body>
     </html>

@@ -182,6 +182,16 @@ export const GET_CART = /* GraphQL */ `
   ${CART_FRAGMENT}
 `
 
+export const GET_ALL_PRODUCTS = /* GraphQL */ `
+  query GetAllProducts {
+    products(first: 250) {
+      nodes {
+        handle
+      }
+    }
+  }
+`
+
 export const GET_ALL_COLLECTIONS = /* GraphQL */ `
   query GetAllCollections {
     collections(first: 50) {
