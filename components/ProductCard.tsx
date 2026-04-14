@@ -39,13 +39,13 @@ export default function ProductCard({ product, shortDescription }: Props) {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 p-4 gap-2">
+      <div className="flex flex-col flex-1 p-3 sm:p-4 gap-2">
         {tags[0] && (
           <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-brand-red">
             {tags[0]}
           </p>
         )}
-        <h3 className="font-bold text-brand-dark text-sm leading-snug line-clamp-2 tracking-tight">
+        <h3 className="font-bold text-brand-dark text-sm sm:text-base leading-snug line-clamp-2 tracking-tight">
           {title}
         </h3>
         {shortDescription && (
@@ -53,7 +53,7 @@ export default function ProductCard({ product, shortDescription }: Props) {
             {shortDescription}
           </p>
         )}
-        <p className="mt-auto pt-2 font-black text-base text-brand-dark tracking-tight">
+        <p className="mt-auto pt-2 font-black text-base sm:text-lg text-brand-dark tracking-tight">
           {formatMoney(price.amount, price.currencyCode)}
         </p>
       </div>

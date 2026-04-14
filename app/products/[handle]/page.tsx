@@ -148,12 +148,12 @@ export default async function ProductPage({ params }: Props) {
                     {editorialData.specs.map((spec) => (
                       <tr
                         key={spec._key}
-                        className="border-b border-zinc-100 last:border-0"
+                        className="block sm:table-row border-b border-zinc-100 last:border-0"
                       >
-                        <td className="py-3 pr-4 font-semibold text-brand-dark/60 w-2/5 align-top">
+                        <td className="block sm:table-cell py-1 sm:py-3 pr-4 font-semibold text-brand-dark/60 sm:w-2/5 align-top pt-3 sm:pt-3">
                           {spec.label}
                         </td>
-                        <td className="py-3 font-medium text-brand-dark align-top">
+                        <td className="block sm:table-cell pb-3 sm:py-3 font-medium text-brand-dark align-top">
                           {spec.value}
                         </td>
                       </tr>

@@ -28,7 +28,7 @@ export default function CartDrawer() {
         aria-modal="true"
         aria-label="Shopping cart"
         className={[
-          'fixed right-0 top-0 z-50 h-full w-full max-w-md bg-white shadow-2xl',
+          'fixed right-0 top-0 z-50 h-full w-full sm:max-w-sm md:max-w-md bg-white shadow-2xl',
           'flex flex-col transition-transform duration-300 ease-in-out',
           isOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
@@ -89,11 +89,11 @@ export default function CartDrawer() {
                     </div>
 
                     {/* Info */}
-                    <div className="flex flex-col flex-1 min-w-0 gap-1">
+                    <div className="flex flex-col flex-1 min-w-0 gap-1 overflow-hidden">
                       <Link
                         href={`/products/${merchandise.product.handle}`}
                         onClick={closeCart}
-                        className="text-sm font-bold text-brand-dark leading-snug line-clamp-2 hover:text-brand-red transition-colors"
+                        className="text-sm font-bold text-brand-dark leading-snug line-clamp-2 hover:text-brand-red transition-colors truncate"
                       >
                         {merchandise.product.title}
                       </Link>
@@ -120,7 +120,7 @@ export default function CartDrawer() {
                       </button>
 
                       {/* Quantity */}
-                      <div className="flex items-center border border-zinc-200 rounded-sm">
+                      <div className="flex items-center border border-zinc-200 rounded-sm shrink-0">
                         <button
                           onClick={() => {
                             if (line.quantity === 1) removeItem(line.id)
@@ -128,7 +128,7 @@ export default function CartDrawer() {
                           }}
                           disabled={isLoading}
                           aria-label="Decrease quantity"
-                          className="w-7 h-7 flex items-center justify-center text-brand-dark hover:bg-zinc-50 transition-colors disabled:opacity-40"
+                          className="w-8 h-8 flex items-center justify-center text-brand-dark hover:bg-zinc-50 transition-colors disabled:opacity-40"
                         >
                           −
                         </button>
@@ -139,7 +139,7 @@ export default function CartDrawer() {
                           onClick={() => updateItem(line.id, line.quantity + 1)}
                           disabled={isLoading}
                           aria-label="Increase quantity"
-                          className="w-7 h-7 flex items-center justify-center text-brand-dark hover:bg-zinc-50 transition-colors disabled:opacity-40"
+                          className="w-8 h-8 flex items-center justify-center text-brand-dark hover:bg-zinc-50 transition-colors disabled:opacity-40"
                         >
                           +
                         </button>

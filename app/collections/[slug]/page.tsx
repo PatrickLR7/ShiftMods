@@ -69,7 +69,7 @@ export default async function CollectionPage({ params }: Props) {
             {collection.title}
           </h1>
           {collection.description && (
-            <p className="mt-4 text-white/65 max-w-2xl text-base leading-relaxed">
+            <p className="mt-4 text-white/65 max-w-2xl text-sm sm:text-base leading-relaxed">
               {collection.description}
             </p>
           )}

@@ -26,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="min-h-screen font-sans bg-brand-light text-brand-dark">
+      <body className="min-h-screen font-sans bg-brand-light text-brand-dark overflow-x-hidden">
         <CartProvider>
           <Header />
           <main>{children}</main>
