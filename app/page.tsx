@@ -1,4 +1,4 @@
-import { sanityClient } from '@/lib/sanity/client'
+import { sanityFetch } from '@/lib/sanity/client'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_SITE_SETTINGS, GET_EDITORIAL_PRODUCTS_BY_HANDLES } from '@/lib/sanity/queries'
 import { GET_FEATURED_PRODUCTS } from '@/lib/shopify/queries'
@@ -16,7 +16,7 @@ type EditorialCardData = {
 }
 
 async function getSiteSettings(): Promise<SiteSettings | null> {
-  return sanityClient.fetch<SiteSettings | null>(GET_SITE_SETTINGS)
+  return sanityFetch<SiteSettings | null>(GET_SITE_SETTINGS)
 }
 
 async function getFeaturedProducts() {
@@ -30,7 +30,7 @@ async function getFeaturedProducts() {
 
 async function getEditorialMap(handles: string[]): Promise<Record<string, EditorialCardData>> {
   if (handles.length === 0) return {}
-  const items = await sanityClient.fetch<EditorialCardData[]>(
+  const items = await sanityFetch<EditorialCardData[]>(
     GET_EDITORIAL_PRODUCTS_BY_HANDLES,
     { handles },
   )

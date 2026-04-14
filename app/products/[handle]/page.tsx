@@ -11,7 +11,7 @@ export const revalidate = 3600
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { shopifyFetch } from '@/lib/shopify/client'
-import { sanityClient } from '@/lib/sanity/client'
+import { sanityFetch } from '@/lib/sanity/client'
 import { urlFor } from '@/lib/sanity/client'
 import { GET_PRODUCT_BY_HANDLE, GET_ALL_PRODUCTS } from '@/lib/shopify/queries'
 import { GET_EDITORIAL_PRODUCT } from '@/lib/sanity/queries'
@@ -58,8 +58,7 @@ export default async function ProductPage({ params }: Props) {
   // Core "bridge pattern" — both sources fetched in parallel
   const [shopifyData, editorialData] = await Promise.all([
     shopifyFetch<ShopifyProductResponse>(GET_PRODUCT_BY_HANDLE, { handle }).catch(() => null),
-    sanityClient
-      .fetch<EditorialProduct | null>(GET_EDITORIAL_PRODUCT, { handle })
+    sanityFetch<EditorialProduct | null>(GET_EDITORIAL_PRODUCT, { handle })
       .catch(() => null),
   ])
 

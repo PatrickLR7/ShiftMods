@@ -22,6 +22,10 @@ export const serverClient = createClient({
   token: process.env.SANITY_API_TOKEN,
 })
 
+export function sanityFetch<T>(query: string, params: Record<string, unknown> = {}): Promise<T> {
+  return sanityClient.fetch<T>(query, params, { next: { tags: ['sanity'] } })
+}
+
 const builder = createImageUrlBuilder(sanityClient)
 
 type SanityImageSource = Parameters<typeof builder.image>[0]
