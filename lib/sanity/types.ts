@@ -1,3 +1,5 @@
+import type { PortableTextBlock } from '@portabletext/react'
+
 export type SanityImage = {
   _type: 'image'
   asset: {
@@ -40,7 +42,7 @@ export type EditorialProduct = {
   shopifyHandle: string
   editorialTitle?: string
   shortDescription?: string
-  longDescription?: unknown[] // PortableText blocks
+  longDescription?: PortableTextBlock[]
   specs?: EditorialProductSpec[]
   editorialImages?: SanityImage[]
   categories?: Array<

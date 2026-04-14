@@ -1,5 +1,5 @@
 import { PortableText } from '@portabletext/react'
-import type { PortableTextComponents } from '@portabletext/react'
+import type { PortableTextComponents, PortableTextBlock } from '@portabletext/react'
 
 const components: PortableTextComponents = {
   marks: {
@@ -21,7 +21,7 @@ const components: PortableTextComponents = {
 }
 
 type Props = {
-  value: unknown[]
+  value: PortableTextBlock[]
 }
 
 export default function PortableTextRenderer({ value }: Props) {

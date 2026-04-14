@@ -20,7 +20,7 @@ import type {
 
 export async function createCart(): Promise<Cart> {
   const data = await shopifyFetch<ShopifyCreateCartResponse>(CREATE_CART)
-  revalidateTag('shopify-cart')
+  revalidateTag('shopify-cart', 'max')
   return data.cartCreate.cart
 }
 
@@ -33,7 +33,7 @@ export async function addToCart(
     cartId,
     lines: [{ merchandiseId: variantId, quantity }],
   })
-  revalidateTag('shopify-cart')
+  revalidateTag('shopify-cart', 'max')
   return data.cartLinesAdd.cart
 }
 
@@ -46,7 +46,7 @@ export async function updateCartLine(
     cartId,
     lines: [{ id: lineId, quantity }],
   })
-  revalidateTag('shopify-cart')
+  revalidateTag('shopify-cart', 'max')
   return data.cartLinesUpdate.cart
 }
 
@@ -58,12 +58,12 @@ export async function removeCartLine(
     cartId,
     lineIds: [lineId],
   })
-  revalidateTag('shopify-cart')
+  revalidateTag('shopify-cart', 'max')
   return data.cartLinesRemove.cart
 }
 
 export async function getCart(cartId: string): Promise<Cart | null> {
   const data = await shopifyFetch<ShopifyCartResponse>(GET_CART, { cartId })
-  revalidateTag('shopify-cart')
+  revalidateTag('shopify-cart', 'max')
   return data.cart ?? null
 }
