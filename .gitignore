@@ -43,5 +43,11 @@ shift-mods-prompts
 
 
 ## API
+shift-mods-api/.venv
 shift-mods-api/venv
 shift-mods-api/.env
+shift-mods-api/__pycache__/
+shift-mods-api/**/__pycache__/
+shift-mods-api/**/*.pyc
+shift-mods-api/.pytest_cache/
+shift-mods-api/*.egg-info/
