@@ -50,17 +50,41 @@ See `.env.example` for all required variables.
 | `SHOPIFY_STOREFRONT_ACCESS_TOKEN` | Shopify Storefront access token |
 | `ALLOWED_ORIGINS` | Comma-separated list of allowed CORS origins |
 
-## Generating the first admin invite
+## Generating the first admin user
 
-Once the service is running and the database is migrated, use the admin endpoint to create the first invite. The first admin account must be seeded directly in the database:
+The first admin cannot be created through the API (there are no invites yet). Insert them directly in the Supabase SQL editor.
 
-```sql
--- Run in Supabase SQL editor (replace values)
-INSERT INTO "shift-mods".users (email, hashed_password, role)
-VALUES ('admin@example.com', '<bcrypt_hash>', 'admin');
+**Step 1 — Generate a bcrypt hash for your password:**
+
+```bash
+cd shift-mods-api
+.venv/Scripts/python -c "from passlib.context import CryptContext; print(CryptContext(schemes=['bcrypt']).hash('your-password-here'))"
 ```
 
-Then log in and call `POST /v1/admin/invites` with your admin token.
+**Step 2 — Insert the admin user in Supabase SQL editor:**
+
+```sql
+INSERT INTO "shift-mods".users (email, hashed_password, role)
+VALUES ('admin@example.com', '<paste-bcrypt-hash-here>', 'admin');
+```
+
+**Step 3 — Log in and generate invites via the API:**
+
+```bash
+# Login
+curl -X POST http://localhost:8000/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"your-password-here"}' \
+  -c cookies.txt
+
+# Generate an invite (cookies.txt holds the auth cookie)
+curl -X POST http://localhost:8000/v1/admin/invites \
+  -H "Content-Type: application/json" \
+  -d '{"expires_in_days":7}' \
+  -b cookies.txt
+```
+
+Or use the interactive docs at `http://localhost:8000/docs`.
 
 ## Database Migrations
 
