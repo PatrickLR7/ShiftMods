@@ -58,7 +58,7 @@ The first admin cannot be created through the API (there are no invites yet). In
 
 ```bash
 cd shift-mods-api
-.venv/Scripts/python -c "from passlib.context import CryptContext; print(CryptContext(schemes=['bcrypt']).hash('your-password-here'))"
+.venv/Scripts/python -c "import bcrypt; print(bcrypt.hashpw(b'your-password-here', bcrypt.gensalt()).decode())"
 ```
 
 **Step 2 — Insert the admin user in Supabase SQL editor:**
