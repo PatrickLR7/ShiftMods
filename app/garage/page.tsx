@@ -4,7 +4,12 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import ProductCard from '@/components/ProductCard'
 import { useCarProfile, useUpdateCarProfile, type BuildGoal, type CarProfileInput } from '@/hooks/useCarProfile'
-import { useRecommendations, type RecommendationResponse } from '@/hooks/useRecommendations'
+import {
+  useRecommendations,
+  useLatestRecommendation,
+  useRecommendationQuota,
+  type RecommendationResponse,
+} from '@/hooks/useRecommendations'
 import type { Product } from '@/lib/shopify/types'
 import { formatMoney } from '@/lib/utils/format'
 
@@ -187,7 +192,7 @@ function SkeletonCards() {
     <div className="space-y-4">
       <p className="text-sm text-brand-dark/60 animate-pulse">Analyzing your build…</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {[...Array(3)].map((_, i) => (
+        {[...Array(4)].map((_, i) => (
           <div key={i} className="rounded-lg bg-brand-dark/10 animate-pulse h-64" />
         ))}
       </div>
@@ -213,7 +218,7 @@ function RecommendationResults({
     })
       .then((r) => r.json())
       .then((data) => setProducts(data.products ?? []))
-      .catch(() => {})
+      .catch(() => { })
   }, [result.recommended_product_ids])
 
   return (
@@ -246,17 +251,47 @@ function RecommendationResults({
   )
 }
 
+function QuotaBadge() {
+  const { data: quota } = useRecommendationQuota()
+
+  if (!quota) return null
+
+  if (quota.is_admin) {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-dark/5 text-xs font-semibold text-brand-dark/60">
+        <span className="text-base leading-none">∞</span> Admin — unlimited
+      </span>
+    )
+  }
+
+  const pct = quota.limit ? (quota.used / quota.limit) * 100 : 0
+  const color = pct >= 100 ? 'text-brand-red' : pct >= 70 ? 'text-amber-600' : 'text-brand-dark/60'
+
+  return (
+    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-brand-dark/5 text-xs font-semibold ${color}`}>
+      {quota.remaining}/{quota.limit} recommendations left today
+    </span>
+  )
+}
+
 function RecommendationPanel() {
   const { data: profile } = useCarProfile()
   const recommend = useRecommendations()
+  const { data: cached } = useLatestRecommendation()
   const [budget, setBudget] = useState('')
 
   const profileSaved = profile !== null && profile !== undefined
   const isRateLimited = recommend.error?.status === 429
   const isNoProfile = recommend.error?.status === 400
+  const displayResult = recommend.data ?? cached
 
   return (
     <div className="space-y-5">
+      {/* Quota badge */}
+      <div className="flex justify-end">
+        <QuotaBadge />
+      </div>
+
       {/* Budget input */}
       <div>
         <label className="block text-xs font-semibold uppercase tracking-widest text-brand-dark/50 mb-1.5">
@@ -312,10 +347,10 @@ function RecommendationPanel() {
         <p className="text-sm text-brand-red">Something went wrong. Please try again.</p>
       )}
 
-      {recommend.data && (
+      {displayResult && !recommend.isPending && (
         <RecommendationResults
-          result={recommend.data}
-          reasoning={recommend.data.reasoning}
+          result={displayResult}
+          reasoning={displayResult.reasoning}
         />
       )}
     </div>
