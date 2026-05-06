@@ -1,15 +1,123 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL!
 
 const NAV_LINKS = [
   { label: 'Performance', href: '/collections/performance' },
   { label: 'Off-Road', href: '/collections/offroad' },
   { label: 'Visual', href: '/collections/visual' },
 ]
+
+type AuthUser = { id: string; email: string; role: string } | null
+
+function UserMenu() {
+  const router = useRouter()
+  const [user, setUser] = useState<AuthUser>(undefined as unknown as AuthUser)
+  const [open, setOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    fetch(`${API_URL}/users/me`, { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => setUser(data))
+      .catch(() => setUser(null))
+  }, [])
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  async function handleLogout() {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    setUser(null)
+    setOpen(false)
+    router.push('/')
+    router.refresh()
+  }
+
+  // Still loading — render nothing to avoid layout shift
+  if (user === (undefined as unknown as AuthUser)) return null
+
+  const UserIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.75}
+      stroke="currentColor"
+      className="w-6 h-6"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+      />
+    </svg>
+  )
+
+  if (!user) {
+    return (
+      <Link
+        href="/login"
+        aria-label="Sign in"
+        className="flex items-center justify-center w-10 h-10 p-2 text-white hover:text-brand-red transition-colors"
+      >
+        {UserIcon}
+      </Link>
+    )
+  }
+
+  return (
+    <div ref={menuRef} className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-label="User menu"
+        aria-expanded={open}
+        className="flex items-center justify-center w-10 h-10 p-2 text-white hover:text-brand-red transition-colors"
+      >
+        {UserIcon}
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-full mt-2 w-56 rounded bg-brand-gray border border-white/10 shadow-xl z-50">
+          <div className="px-4 py-3 border-b border-white/10">
+            <p className="text-xs text-white/40 uppercase tracking-widest mb-0.5">Signed in as</p>
+            <p className="text-sm text-white truncate">{user.email}</p>
+          </div>
+          <div className="py-1">
+            <Link
+              href="/garage"
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors"
+            >
+              My Garage
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-brand-red hover:bg-white/5 transition-colors"
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function Header() {
   const { cart, openCart } = useCart()
@@ -45,7 +153,7 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* Right side: cart + hamburger */}
+        {/* Right side: cart + user + hamburger */}
         <div className="flex items-center gap-2">
           {/* Cart button */}
           <button
@@ -74,6 +182,9 @@ export default function Header() {
               </span>
             )}
           </button>
+
+          {/* User menu */}
+          <UserMenu />
 
           {/* Hamburger — mobile only */}
           <button

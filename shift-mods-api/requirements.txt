@@ -6,7 +6,7 @@ alembic
 pydantic-settings
 pydantic[email]
 python-jose[cryptography]
-passlib[bcrypt]
+bcrypt
 google-genai
 httpx
 python-multipart
