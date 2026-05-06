@@ -202,6 +202,17 @@ export const GET_ALL_COLLECTIONS = /* GraphQL */ `
   }
 `
 
+export const GET_PRODUCTS_BY_IDS = /* GraphQL */ `
+  query GetProductsByIds($ids: [ID!]!) {
+    nodes(ids: $ids) {
+      ... on Product {
+        ...Product
+      }
+    }
+  }
+  ${PRODUCT_FRAGMENT}
+`
+
 // ---- Mutations ----
 
 export const CREATE_CART = /* GraphQL */ `

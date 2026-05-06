@@ -98,7 +98,7 @@ async def get_recommendations(
     for attempt in range(2):
         full_prompt = prompt if attempt == 0 else prompt + _RETRY_SUFFIX
         response = await _client.aio.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash",
             contents=full_prompt,
             config=_GENERATE_CONFIG,
         )

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!
@@ -16,20 +16,28 @@ const NAV_LINKS = [
 
 type AuthUser = { id: string; email: string; role: string } | null
 
-function UserMenu() {
-  const router = useRouter()
-  const [user, setUser] = useState<AuthUser>(undefined as unknown as AuthUser)
+const USER_ICON = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+)
+
+function UserMenu({ user, onLogout }: { user: AuthUser; onLogout: () => void }) {
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    fetch(`${API_URL}/users/me`, { credentials: 'include' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => setUser(data))
-      .catch(() => setUser(null))
-  }, [])
-
-  // Close dropdown on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -40,34 +48,6 @@ function UserMenu() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  async function handleLogout() {
-    await fetch('/api/auth/logout', { method: 'POST' })
-    setUser(null)
-    setOpen(false)
-    router.push('/')
-    router.refresh()
-  }
-
-  // Still loading — render nothing to avoid layout shift
-  if (user === (undefined as unknown as AuthUser)) return null
-
-  const UserIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  )
-
   if (!user) {
     return (
       <Link
@@ -75,7 +55,7 @@ function UserMenu() {
         aria-label="Sign in"
         className="flex items-center justify-center w-10 h-10 p-2 text-white hover:text-brand-red transition-colors"
       >
-        {UserIcon}
+        {USER_ICON}
       </Link>
     )
   }
@@ -88,7 +68,7 @@ function UserMenu() {
         aria-expanded={open}
         className="flex items-center justify-center w-10 h-10 p-2 text-white hover:text-brand-red transition-colors"
       >
-        {UserIcon}
+        {USER_ICON}
       </button>
 
       {open && (
@@ -106,7 +86,7 @@ function UserMenu() {
               My Garage
             </Link>
             <button
-              onClick={handleLogout}
+              onClick={() => { setOpen(false); onLogout() }}
               className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:text-brand-red hover:bg-white/5 transition-colors"
             >
               Sign out
@@ -119,9 +99,26 @@ function UserMenu() {
 }
 
 export default function Header() {
+  const router = useRouter()
+  const pathname = usePathname()
   const { cart, openCart } = useCart()
   const itemCount = cart?.totalQuantity ?? 0
   const [menuOpen, setMenuOpen] = useState(false)
+  const [user, setUser] = useState<AuthUser | undefined>(undefined)
+
+  useEffect(() => {
+    fetch(`${API_URL}/users/me`, { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => setUser(data))
+      .catch(() => setUser(null))
+  }, [pathname])
+
+  async function handleLogout() {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    setUser(null)
+    router.push('/')
+    router.refresh()
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-brand-dark border-b border-white/10">
@@ -150,6 +147,14 @@ export default function Header() {
               {label}
             </Link>
           ))}
+          {user && (
+            <Link
+              href="/garage"
+              className="text-sm font-semibold tracking-widest uppercase text-white/70 hover:text-white transition-colors"
+            >
+              My Garage
+            </Link>
+          )}
         </nav>
 
         {/* Right side: cart + user + hamburger */}
@@ -182,8 +187,10 @@ export default function Header() {
             )}
           </button>
 
-          {/* User menu */}
-          <UserMenu />
+          {/* User menu — hidden until auth check resolves */}
+          {user !== undefined && (
+            <UserMenu user={user} onLogout={handleLogout} />
+          )}
 
           {/* Hamburger — mobile only */}
           <button
@@ -221,6 +228,15 @@ export default function Header() {
               {label}
             </Link>
           ))}
+          {user && (
+            <Link
+              href="/garage"
+              onClick={() => setMenuOpen(false)}
+              className="block py-4 px-6 text-sm font-semibold tracking-widest uppercase text-white hover:text-brand-red transition-colors border-b border-white/5 last:border-0"
+            >
+              My Garage
+            </Link>
+          )}
         </nav>
       )}
     </header>

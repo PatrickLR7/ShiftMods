@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
@@ -51,7 +51,7 @@ async def upsert_car_profile(
     profile.trim = body.trim
     profile.goal = body.goal.value
     profile.notes = body.notes
-    profile.updated_at = datetime.now(timezone.utc)
+    profile.updated_at = datetime.utcnow()
 
     await db.commit()
     await db.refresh(profile)
