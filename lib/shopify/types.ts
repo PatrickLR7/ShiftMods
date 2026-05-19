@@ -113,3 +113,7 @@ export type ShopifyAllCollectionsResponse = {
 export type ShopifyAllProductsResponse = {
   products: { nodes: { handle: string }[] }
 }
+
+export type ShopifyNodesByIdsResponse = {
+  nodes: (Product | null)[]
+}
