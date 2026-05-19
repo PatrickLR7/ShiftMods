@@ -20,6 +20,6 @@ app.include_router(ai.router, prefix="/v1")
 app.include_router(admin.router, prefix="/v1")
 
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health():
     return {"status": "ok"}
