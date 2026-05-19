@@ -18,7 +18,12 @@ from app.config import settings
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 # In production (Render/Vercel) cookies must be Secure. Disable only in local dev.
-_COOKIE_SECURE = not settings.ALLOWED_ORIGINS.startswith("http://localhost")
+_IS_LOCAL = any(
+    o.startswith("http://localhost") 
+    for o in settings.ALLOWED_ORIGINS.split(",")
+)
+_COOKIE_SECURE = not _IS_LOCAL
+_COOKIE_SAMESITE = "none" if _COOKIE_SECURE else "lax"
 
 
 def _set_auth_cookies(response: Response, access_token: str, refresh_token: str) -> None:
@@ -27,7 +32,7 @@ def _set_auth_cookies(response: Response, access_token: str, refresh_token: str)
         value=access_token,
         httponly=True,
         secure=_COOKIE_SECURE,
-        samesite="lax",
+        samesite=_COOKIE_SAMESITE,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
     response.set_cookie(
@@ -35,7 +40,7 @@ def _set_auth_cookies(response: Response, access_token: str, refresh_token: str)
         value=refresh_token,
         httponly=True,
         secure=_COOKIE_SECURE,
-        samesite="lax",
+        samesite=_COOKIE_SAMESITE,
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 86400,
     )
 
