@@ -4,7 +4,8 @@ FastAPI backend for the ShiftMods Build Advisor feature.
 
 ## Requirements
 
-- Python 3.12+
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) package manager
 - A Supabase PostgreSQL database with the `shift-mods` schema
 
 ## Setup
@@ -12,22 +13,23 @@ FastAPI backend for the ShiftMods Build Advisor feature.
 ```bash
 cd shift-mods-api
 
-# Create and activate a virtual environment
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies into .venv (created automatically)
+uv sync
 
 # Configure environment
 cp .env.example .env
 # Edit .env with your actual values
 ```
 
-## Running the server
+## Development
 
 ```bash
-uvicorn app.main:app --reload
+uv sync                                                    # install all deps into .venv
+uv sync --group dev                                        # include dev dependencies
+uv run uvicorn app.main:app --reload --port 8000           # run dev server
+uv run pytest                                              # run tests
+uv add <package>                                           # add a runtime dep
+uv add --dev <package>                                     # add a dev dep
 ```
 
 The API will be available at `http://localhost:8000`.
@@ -58,7 +60,7 @@ The first admin cannot be created through the API (there are no invites yet). In
 
 ```bash
 cd shift-mods-api
-.venv/Scripts/python -c "import bcrypt; print(bcrypt.hashpw(b'your-password-here', bcrypt.gensalt()).decode())"
+uv run python -c "import bcrypt; print(bcrypt.hashpw(b'your-password-here', bcrypt.gensalt()).decode())"
 ```
 
 **Step 2 — Insert the admin user in Supabase SQL editor:**
